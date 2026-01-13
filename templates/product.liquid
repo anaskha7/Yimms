@@ -1,0 +1,12 @@
+<article class="product">
+  <h1>{{ product.title }}</h1>
+  <div class="product-media">
+    {% if product.featured_image %}
+      <img src="{{ product.featured_image | img_url: 'master' }}" alt="{{ product.title }}">
+    {% endif %}
+  </div>
+  <div class="product-info">
+    {{ product.description_html }}
+    <p class="price">{{ product.price | money }}</p>
+  </div>
+</article>

@@ -1,0 +1,10 @@
+{% section 'hero' %}
+
+<section class="collection-list">
+  <h1>Productos</h1>
+  <div class="grid">
+    {% for product in collections.frontpage.products %}
+      {% include 'product-card' with product %}
+    {% endfor %}
+  </div>
+</section>

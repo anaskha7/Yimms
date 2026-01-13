@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Theme settings",
+    "settings": [
+      { "type": "text", "id": "footer_text", "label": "Footer text", "default": "© Your store" }
+    ]
+  }
+]
