@@ -1,12 +1,172 @@
-<article class="product">
-  <h1>{{ product.title }}</h1>
-  <div class="product-media">
-    {% if product.featured_image %}
-      <img src="{{ product.featured_image | img_url: 'master' }}" alt="{{ product.title }}">
-    {% endif %}
+<div class="product-page">
+  <div class="product-container">
+    <div class="product-layout">
+      <!-- Left Side - Image Gallery -->
+      <div class="product-gallery">
+        <div class="product-images">
+         <div class="product-main-image">
+          <img 
+            src="{{ product.featured_image | img_url: '1024x1024' }}" 
+            alt="{{ product.title }}"
+            id="main-product-image"
+            data-images='{{ product.images | json }}'
+          >
+        </div>
+
+          {% if product.images.size > 1 %}
+          <button class="product-nav product-nav--prev" type="button" aria-label="Previous image">‹</button>
+          <button class="product-nav product-nav--next" type="button" aria-label="Next image">›</button>
+          {% endif %}
+        </div>
+
+        <!-- Product Details Below Image -->
+        <div class="product-info-bottom">
+          <div class="product-info-grid">
+            <div class="info-labels">
+              <h3>SIZE CHART</h3>
+              <h3>PRODUCT DETAILS</h3>
+            </div>
+            
+            <div class="info-content">
+              <h2 class="product-title">{{ product.title }}</h2>
+              <div class="product-description">
+                {{ product.description }}
+              </div>
+            </div>
+          </div>
+
+          <div class="product-purchase-section">
+          <form action="/cart/add" method="post" id="product-form" class="product-form">
+              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="variant-id">
+              
+              <div class="purchase-controls">
+                {% if product.variants.size > 1 %}
+                <div class="size-selector">
+                  <select name="id" class="size-select" id="variant-selector">
+                    {% for variant in product.variants %}
+                      <option 
+                        value="{{ variant.id }}"
+                        {% unless variant.available %}disabled{% endunless %}
+                      >
+                        {{ variant.title }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                {% endif %}
+
+                <button 
+                  type="submit" 
+                  class="add-to-cart-btn"
+                  {% unless product.available %}disabled{% endunless %}
+                >
+                  {% if product.available %}
+                    ADD TO CART
+                  {% else %}
+                    SOLD OUT
+                  {% endif %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="product-info">
-    {{ product.description_html }}
-    <p class="price">{{ product.price | money }}</p>
-  </div>
-</article>
+</div>
+
+<script>
+(function () {
+  const img = document.getElementById('main-product-image');
+  const prev = document.querySelector('.product-nav--prev');
+  const next = document.querySelector('.product-nav--next');
+
+  if (!img || !prev || !next) return;
+
+  let raw;
+  try {
+    raw = JSON.parse(img.dataset.images || '[]');
+  } catch {
+    return;
+  }
+
+  if (!Array.isArray(raw) || raw.length === 0) return;
+
+  // Normalize Shopify URLs
+  const images = raw.map(src => {
+    src = src.replace(/\\/g, '');
+    if (src.startsWith('//')) src = 'https:' + src;
+    return src;
+  });
+
+  let index = images.findIndex(src => img.src.includes(src.split('?')[0]));
+  if (index === -1) index = 0;
+
+  let animating = false;
+
+  // Preload all images
+  images.forEach(src => {
+    const i = new Image();
+    i.src = src;
+  });
+
+  function swapImage(newIndex) {
+    if (animating) return;
+    animating = true;
+
+    const nextSrc = images[newIndex];
+    const preload = new Image();
+    preload.src = nextSrc;
+
+    img.classList.add('is-fading');
+
+    preload.onload = () => {
+      img.src = nextSrc;
+      requestAnimationFrame(() => {
+        img.classList.remove('is-fading');
+        animating = false;
+      });
+    };
+  }
+
+  prev.addEventListener('click', e => {
+    e.preventDefault();
+    index = (index - 1 + images.length) % images.length;
+    swapImage(index);
+  });
+
+  next.addEventListener('click', e => {
+    e.preventDefault();
+    index = (index + 1) % images.length;
+    swapImage(index);
+  });
+})();
+
+
+// Variant selector
+document.getElementById('variant-selector')?.addEventListener('change', function() {
+  document.getElementById('variant-id').value = this.value;
+});
+</script>
+<script>
+// Handle add to cart with AJAX
+document.getElementById('product-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  
+  fetch('/cart/add.js', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Redirect to cart page
+    window.location.href = '/cart';
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('There was an error adding the item to your cart.');
+  });
+});
+</script>

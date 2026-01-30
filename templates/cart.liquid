@@ -1,0 +1,80 @@
+<div class="cart-page">
+  <div class="cart-container">
+    <h1 class="cart-title">SHOPPING CART</h1>
+
+    {% if cart.item_count > 0 %}
+      <form action="/cart" method="post" class="cart-form">
+        <div class="cart-items">
+          {% for item in cart.items %}
+            <div class="cart-item">
+              <div class="cart-item-image">
+                {% if item.image %}
+                  <img src="{{ item.image | img_url: 'medium' }}" alt="{{ item.title }}">
+                {% endif %}
+              </div>
+
+              <div class="cart-item-details">
+                <h3 class="cart-item-title">{{ item.product.title }}</h3>
+                {% if item.variant.title != 'Default Title' %}
+                  <p class="cart-item-variant">{{ item.variant.title }}</p>
+                {% endif %}
+                <p class="cart-item-price">{{ item.price | money }}</p>
+              </div>
+
+              <div class="cart-item-quantity">
+                <label for="updates_{{ item.key }}">QTY</label>
+                <input 
+                  type="number" 
+                  name="updates[]" 
+                  id="updates_{{ item.key }}" 
+                  value="{{ item.quantity }}" 
+                  min="0"
+                  data-line="{{ forloop.index }}"
+                  class="quantity-input"
+                >
+              </div>
+
+              <div class="cart-item-total">
+                <p>{{ item.line_price | money }}</p>
+              </div>
+
+              <div class="cart-item-remove">
+                <a href="/cart/change?line={{ forloop.index }}&quantity=0" class="remove-btn">×</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="cart-footer">
+          <div class="cart-actions">
+            <button type="submit" name="update" class="update-cart-btn">UPDATE CART</button>
+            <a href="/" class="continue-shopping">CONTINUE SHOPPING</a>
+          </div>
+
+          <div class="cart-summary">
+            <div class="cart-subtotal">
+              <span>SUBTOTAL</span>
+              <span class="subtotal-price">{{ cart.total_price | money }}</span>
+            </div>
+            <p class="cart-note">Shipping & taxes calculated at checkout</p>
+            <button type="submit" name="checkout" class="checkout-btn">PROCEED TO CHECKOUT</button>
+          </div>
+        </div>
+      </form>
+    {% else %}
+      <div class="cart-empty">
+        <p>Your cart is currently empty.</p>
+        <a href="/collections/all" class="continue-shopping-btn">CONTINUE SHOPPING</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+// Auto-update cart on quantity change
+document.querySelectorAll('.quantity-input').forEach(input => {
+  input.addEventListener('change', function() {
+    this.closest('form').submit();
+  });
+});
+</script>
