@@ -1,0 +1,337 @@
+<div class="lookbook-page">
+  <div class="lookbook-container">
+    <div class="lookbook-main">
+      <div class="lookbook-main-image">
+        <img src="" alt="{{ page.title }}" id="lookbook-main" class="lookbook-loading">
+        <div class="lookbook-loader" id="lookbook-loader">Loading...</div>
+      </div>
+      
+      <div class="lookbook-info">
+        <h2 class="lookbook-collection">yimms®/Fall Winter 2025</h2>
+        <h1 class="lookbook-title">{{ page.title }}</h1>
+        <p class="lookbook-subtitle">Collection</p>
+      </div>
+    </div>
+
+    <div class="lookbook-grid">
+      <div class="lookbook-thumbnails" id="lookbook-thumbnails">
+        {{ page.content }}
+      </div>
+      
+      <div class="lookbook-pagination">
+        <span class="lookbook-page-count"><span id="current-image">1</span> of <span id="total-images">0</span></span>
+        <button class="lookbook-next" id="lookbook-next">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const mainImage = document.getElementById('lookbook-main');
+  const loader = document.getElementById('lookbook-loader');
+  const container = document.getElementById('lookbook-thumbnails');
+  const currentImageSpan = document.getElementById('current-image');
+  const totalImagesSpan = document.getElementById('total-images');
+  const nextBtn = document.getElementById('lookbook-next');
+  
+  if (!mainImage || !container) return;
+
+  // Extract all high-res image URLs from page content
+  const allImages = container.querySelectorAll('img');
+  const imageData = [];
+  
+  allImages.forEach(function(img, index) {
+    const highResUrl = img.src;
+    // Create thumbnail URL (smaller size)
+    const thumbnailUrl = highResUrl.replace(/(\.(jpg|jpeg|png|gif|webp))/i, '_small$1');
+    
+    imageData.push({
+      highRes: highResUrl,
+      thumbnail: thumbnailUrl,
+      index: index
+    });
+    
+    // Replace original with thumbnail
+    img.dataset.highres = highResUrl;
+    img.dataset.index = index;
+    img.src = thumbnailUrl;
+    img.loading = 'lazy'; // Native lazy loading
+  });
+
+  totalImagesSpan.textContent = imageData.length;
+
+  let currentIndex = 0;
+  let isLoading = false;
+
+  // Function to load high-res image
+  function loadHighResImage(url, index) {
+    if (isLoading) return;
+    
+    isLoading = true;
+    loader.style.display = 'flex';
+    mainImage.classList.add('lookbook-loading');
+
+    // Create new image to preload
+    const newImg = new Image();
+    
+    newImg.onload = function() {
+      mainImage.src = url;
+      mainImage.classList.remove('lookbook-loading');
+      loader.style.display = 'none';
+      isLoading = false;
+      currentIndex = index;
+      currentImageSpan.textContent = index + 1;
+      
+      // Update active states
+      allImages.forEach(function(img) {
+        img.classList.remove('active');
+      });
+      allImages[index].classList.add('active');
+    };
+
+    newImg.onerror = function() {
+      // Fallback to original URL if thumbnail fails
+      mainImage.src = url;
+      mainImage.classList.remove('lookbook-loading');
+      loader.style.display = 'none';
+      isLoading = false;
+    };
+
+    newImg.src = url;
+  }
+
+  // Load first image
+  if (allImages[0]) {
+    loadHighResImage(allImages[0].dataset.highres, 0);
+  }
+
+  // Click handlers for thumbnails
+  allImages.forEach(function(thumb) {
+    thumb.addEventListener('click', function() {
+      const highResUrl = this.dataset.highres;
+      const index = parseInt(this.dataset.index);
+      loadHighResImage(highResUrl, index);
+    });
+  });
+
+  // Next button
+  nextBtn.addEventListener('click', function() {
+    const nextIndex = (currentIndex + 1) % imageData.length;
+    loadHighResImage(allImages[nextIndex].dataset.highres, nextIndex);
+    
+    // Scroll thumbnail into view
+    allImages[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') {
+      nextBtn.click();
+    } else if (e.key === 'ArrowLeft') {
+      const prevIndex = (currentIndex - 1 + imageData.length) % imageData.length;
+      loadHighResImage(allImages[prevIndex].dataset.highres, prevIndex);
+      allImages[prevIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+})();
+</script>
+
+<style>
+/* Lookbook Page */
+.lookbook-page {
+  padding: 2rem;
+  max-width: 100%;
+  min-height: 100vh;
+}
+
+.lookbook-container {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.lookbook-main {
+  position: relative;
+}
+
+.lookbook-main-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.lookbook-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.lookbook-main-image img.lookbook-loading {
+  opacity: 0.3;
+}
+
+.lookbook-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #000;
+  display: none;
+}
+
+.lookbook-info {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.lookbook-collection {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem 0;
+}
+
+.lookbook-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.25rem 0;
+}
+
+.lookbook-subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.lookbook-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lookbook-thumbnails {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.lookbook-thumbnails::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lookbook-thumbnails::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.lookbook-thumbnails::-webkit-scrollbar-thumb {
+  background: #000;
+}
+
+.lookbook-thumbnails img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.lookbook-thumbnails img:hover {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+.lookbook-thumbnails img.active {
+  border-color: #e74c3c;
+  opacity: 1;
+}
+
+/* Hide unwanted content from page editor */
+.lookbook-thumbnails p,
+.lookbook-thumbnails br {
+  display: none;
+}
+
+.lookbook-thumbnails div {
+  display: contents;
+}
+
+.lookbook-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.lookbook-page-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.lookbook-next {
+  background: none;
+  border: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: opacity 0.2s ease;
+}
+
+.lookbook-next:hover {
+  opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .lookbook-container {
+    grid-template-columns: 1fr;
+  }
+
+  .lookbook-thumbnails {
+    grid-template-columns: repeat(4, 1fr);
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .lookbook-page {
+    padding: 1rem;
+  }
+
+  .lookbook-thumbnails {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .lookbook-main-image {
+    aspect-ratio: 3/4;
+  }
+}
+
+@media (max-width: 480px) {
+  .lookbook-thumbnails {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
