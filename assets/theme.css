@@ -1,6 +1,230 @@
 /* Minimal theme styles */
-body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial; margin:0; padding:0; }
+body {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 400;
+}
 .wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
 .site-header, .site-footer { background:#f7f7f7; }
 .grid { display:flex; flex-wrap:wrap; gap:1rem; }
-.product-card { border:1px solid #eee; padding:0.5rem; width:calc(33% - 1rem); box-sizing:border-box; }
+/* .product-card { border:1px solid #eee; padding:0.5rem; width:calc(33% - 1rem); box-sizing:border-box; } */
+
+.collection-list {
+  padding: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.product-card {
+  text-align: center;
+}
+
+.product-card__link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.product-card__image {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #f5f5f5;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.product-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card__link:hover .product-card__image img {
+  transform: scale(1.05);
+}
+
+.product-card__title {
+  font-size: 0.875rem;
+  font-weight: 400;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.product-card__price {
+  font-size: 0.875rem;
+  margin: 0;
+  color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* header */
+
+/* Header Styles */
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 1.5rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Top Row - Logo | SHOP | About/Lookbook/Cart */
+.header-top {
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Logo */
+.header-logo a {
+  text-decoration: none;
+  color: #000;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 1.5rem;
+  display: block;
+}
+
+.header-logo img {
+  height: 20px;
+  width: auto;
+}
+
+/* SHOP - Centered */
+.header-shop {
+  display: flex;
+  justify-content: center;
+}
+
+/* Header Actions - Right Aligned */
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: #000;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  opacity: 0.6;
+}
+
+.nav-link--shop {
+  font-weight: 600;
+}
+
+.cart-link {
+  display: flex;
+  align-items: center;
+  color: #000;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.cart-link:hover {
+  opacity: 0.6;
+}
+
+/* Bottom Row - Main Menu Centered */
+.header-nav {
+  display: flex;
+  justify-content: center;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 2rem;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.plus-icon {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .header-top {
+    grid-template-columns: 150px 1fr 150px;
+    gap: 1rem;
+  }
+  
+  .nav-menu {
+    gap: 1.5rem;
+  }
+  
+  .header-actions {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-header {
+    padding: 1rem;
+  }
+  
+  .header-top {
+    grid-template-columns: 1fr auto auto;
+    margin-bottom: 0;
+  }
+  
+  .header-shop,
+  .header-nav,
+  .header-actions .nav-link {
+    display: none;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .header-actions {
+    gap: 1rem;
+  }
+}

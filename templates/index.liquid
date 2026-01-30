@@ -1,10 +1,9 @@
-{% section 'hero' %}
+{% comment %} {% section 'hero' %} {% endcomment %}
 
 <section class="collection-list">
-  <h1>Productos</h1>
   <div class="grid">
-    {% for product in collections.frontpage.products %}
+    {% for product in collections.all.products %}
       {% include 'product-card' with product %}
-    {% endfor %}
+    {% endfor %} 
   </div>
 </section>
