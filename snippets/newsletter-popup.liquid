@@ -1,0 +1,278 @@
+<div class="newsletter-popup" id="newsletter-popup">
+  <div class="newsletter-popup-overlay"></div>
+  <div class="newsletter-popup-content">
+    <button class="newsletter-popup-close" id="popup-close">×</button>
+    
+    <div class="newsletter-popup-inner">
+      <h2 class="newsletter-popup-title">GET 10% OFF</h2>
+      <p class="newsletter-popup-subtitle">Subscribe to our newsletter and receive 10% off your first order</p>
+      
+      {% form 'customer', class: 'newsletter-popup-form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        
+        <div class="newsletter-popup-field">
+          <input 
+            type="email" 
+            name="contact[email]" 
+            placeholder="Enter your email"
+            class="newsletter-popup-input"
+            required
+          >
+        </div>
+        
+        <button type="submit" class="newsletter-popup-submit">
+          SUBSCRIBE & GET 10% OFF
+        </button>
+        
+        <p class="newsletter-popup-terms">
+          By subscribing, you agree to receive marketing emails from {{ shop.name }}.
+        </p>
+      {% endform %}
+      
+      <div class="newsletter-popup-success" id="popup-success" style="display: none;">
+        <h3>Thank You!</h3>
+        <p>Check your email for your 10% discount code.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.newsletter-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.newsletter-popup.active {
+  display: flex;
+  opacity: 1;
+}
+
+.newsletter-popup-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.newsletter-popup-content {
+  position: relative;
+  background: #fff;
+  max-width: 500px;
+  width: 90%;
+  margin: auto;
+  padding: 3rem 2rem;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+.newsletter-popup.active .newsletter-popup-content {
+  transform: scale(1);
+}
+
+.newsletter-popup-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  font-family: 'IBM Plex Mono', monospace;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: #000;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.newsletter-popup-close:hover {
+  opacity: 0.6;
+}
+
+.newsletter-popup-inner {
+  text-align: center;
+}
+
+.newsletter-popup-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+}
+
+.newsletter-popup-subtitle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #666;
+  margin: 0 0 2rem 0;
+}
+
+.newsletter-popup-form {
+  margin-bottom: 1rem;
+}
+
+.newsletter-popup-field {
+  margin-bottom: 1rem;
+}
+
+.newsletter-popup-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #000;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.newsletter-popup-input::placeholder {
+  color: #999;
+}
+
+.newsletter-popup-submit {
+  width: 100%;
+  padding: 0.75rem 2rem;
+  background: #000;
+  color: #fff;
+  border: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.newsletter-popup-submit:hover {
+  opacity: 0.8;
+}
+
+.newsletter-popup-terms {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: #999;
+  margin: 1rem 0 0 0;
+  line-height: 1.4;
+}
+
+.newsletter-popup-success {
+  padding: 2rem 0;
+}
+
+.newsletter-popup-success h3 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+}
+
+.newsletter-popup-success p {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .newsletter-popup-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .newsletter-popup-title {
+    font-size: 1.5rem;
+  }
+
+  .newsletter-popup-subtitle {
+    font-size: 0.8rem;
+  }
+}
+</style>
+
+<script>
+(function() {
+  const popup = document.getElementById('newsletter-popup');
+  const closeBtn = document.getElementById('popup-close');
+  const overlay = document.querySelector('.newsletter-popup-overlay');
+  const form = document.querySelector('.newsletter-popup-form');
+  const successMsg = document.getElementById('popup-success');
+  
+  if (!popup) return;
+
+  // Check if user has already seen the popup
+  const hasSeenPopup = localStorage.getItem('newsletter-popup-seen');
+  const hasSubscribed = localStorage.getItem('newsletter-subscribed');
+
+  if (!hasSeenPopup && !hasSubscribed) {
+    // Show popup after 5 seconds
+    setTimeout(function() {
+      popup.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }, 5000);
+  }
+
+  // Close popup function
+  function closePopup() {
+    popup.classList.remove('active');
+    document.body.style.overflow = '';
+    localStorage.setItem('newsletter-popup-seen', 'true');
+  }
+
+  // Close button
+  closeBtn.addEventListener('click', closePopup);
+
+  // Close on overlay click
+  overlay.addEventListener('click', closePopup);
+
+  // Close on escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && popup.classList.contains('active')) {
+      closePopup();
+    }
+  });
+
+  // Handle form submission
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    
+    fetch('/contact', {
+      method: 'POST',
+      body: formData
+    })
+    .then(function() {
+      // Hide form, show success message
+      form.style.display = 'none';
+      successMsg.style.display = 'block';
+      localStorage.setItem('newsletter-subscribed', 'true');
+      
+      // Close popup after 3 seconds
+      setTimeout(closePopup, 3000);
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('There was an error. Please try again.');
+    });
+  });
+})();
+</script>

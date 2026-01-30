@@ -1,0 +1,39 @@
+<div class="customer-page">
+  <div class="customer-container">
+    <h1 class="customer-title">Activate Account</h1>
+
+    {% form 'activate_customer_password' %}
+      {% if form.errors %}
+        <div class="form-errors">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <p>Create a password to activate your account.</p>
+
+      <div class="form-field">
+        <label for="customer-password">Password</label>
+        <input 
+          type="password" 
+          name="customer[password]" 
+          id="customer-password"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="customer-password-confirm">Confirm Password</label>
+        <input 
+          type="password" 
+          name="customer[password_confirmation]" 
+          id="customer-password-confirm"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="form-submit">Activate Account</button>
+    {% endform %}
+  </div>
+</div>

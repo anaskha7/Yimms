@@ -1,0 +1,42 @@
+<div class="customer-page">
+  <div class="customer-container">
+    <h1 class="customer-title">Login</h1>
+
+    {% form 'customer_login' %}
+      {% if form.errors %}
+        <div class="form-errors">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <div class="form-field">
+        <label for="customer-email">Email</label>
+        <input 
+          type="email" 
+          name="customer[email]" 
+          id="customer-email"
+          autocomplete="email"
+          required
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="customer-password">Password</label>
+        <input 
+          type="password" 
+          name="customer[password]" 
+          id="customer-password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="form-submit">Sign In</button>
+
+      <div class="form-links">
+        <a href="/account/register">Create Account</a>
+        <a href="/account/recover">Forgot Password?</a>
+      </div>
+    {% endform %}
+  </div>
+</div>

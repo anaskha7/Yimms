@@ -1,0 +1,22 @@
+{% comment %} {% section 'hero' %} {% endcomment %}
+
+<section class="collection-list">
+  <div class="grid">
+    {% for product in collections.all.products %}
+      {% include 'product-card' with product %}
+    {% endfor %} 
+  </div>
+</section>
+{% if paginate.pages > 1 %}
+    <div class="pagination">
+      {% if paginate.previous %}
+        <a href="{{ paginate.previous.url }}" class="pagination-link">← Previous</a>
+      {% endif %}
+      
+      <span class="pagination-current">Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+      
+      {% if paginate.next %}
+        <a href="{{ paginate.next.url }}" class="pagination-link">Next →</a>
+      {% endif %}
+    </div>
+  {% endif %}

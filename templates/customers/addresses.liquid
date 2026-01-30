@@ -1,0 +1,28 @@
+<div class="customer-page">
+  <div class="customer-container">
+    <h1 class="customer-title">Addresses</h1>
+
+    <a href="/account" class="back-link">← Back to Account</a>
+
+    <div class="addresses-list">
+      {% for address in customer.addresses %}
+        <div class="address-card">
+          <p><strong>{{ address.first_name }} {{ address.last_name }}</strong></p>
+          <p>{{ address.address1 }}</p>
+          {% if address.address2 != blank %}
+            <p>{{ address.address2 }}</p>
+          {% endif %}
+          <p>{{ address.city }}, {{ address.province }} {{ address.zip }}</p>
+          <p>{{ address.country }}</p>
+          
+          <div class="address-actions">
+            <a href="/account/addresses/{{ address.id }}/edit">Edit</a>
+            <a href="/account/addresses/{{ address.id }}" data-method="delete">Delete</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <a href="/account/addresses/new" class="add-address-btn">Add New Address</a>
+  </div>
+</div>

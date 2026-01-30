@@ -29,27 +29,87 @@
             <path d="M14 8C14 9.06087 13.5786 10.0783 12.8284 10.8284C12.0783 11.5786 11.0609 12 10 12C8.93913 12 7.92172 11.5786 7.17157 10.8284C6.42143 10.0783 6 9.06087 6 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           {% if cart.item_count > 0 %}
-    <span class="cart-count">{{ cart.item_count }}</span>
-  {% endif %}
+            <span class="cart-count">{{ cart.item_count }}</span>
+          {% endif %}
         </a>
       </div>
 
       <!-- Mobile Menu Toggle -->
-      <button class="mobile-menu-toggle" aria-label="Toggle menu">
+      <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobile-menu-toggle">
         <span class="plus-icon">+</span>
       </button>
     </div>
 
     <!-- Bottom Row - Main Menu Centered -->
-    <nav class="header-nav">
+    <nav class="header-nav" id="main-nav">
       <ul class="nav-menu">
         {% for link in linklists[section.settings.menu].links %}
           <li><a href="{{ link.url }}" class="nav-link">{{ link.title | upcase }}</a></li>
         {% endfor %}
       </ul>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="mobile-menu-content">
+        <button class="mobile-menu-close" id="mobile-menu-close">×</button>
+        
+        <div class="mobile-menu-section">
+          <a href="/collections/all" class="mobile-menu-link">SHOP</a>
+        </div>
+
+        <nav class="mobile-menu-nav">
+          {% for link in linklists[section.settings.menu].links %}
+            <a href="{{ link.url }}" class="mobile-menu-link">{{ link.title | upcase }}</a>
+          {% endfor %}
+        </nav>
+
+        <div class="mobile-menu-section">
+          <a href="/pages/about" class="mobile-menu-link">ABOUT US</a>
+          <a href="/pages/lookbook" class="mobile-menu-link">LOOKBOOK</a>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
+
+<script>
+  (function() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const close = document.getElementById('mobile-menu-close');
+    const body = document.body;
+
+    if (!toggle || !menu || !close) return;
+
+    function openMenu() {
+      menu.classList.add('active');
+      body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      menu.classList.remove('active');
+      body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', openMenu);
+    close.addEventListener('click', closeMenu);
+
+    // Close on overlay click
+    menu.addEventListener('click', function(e) {
+      if (e.target === menu) {
+        closeMenu();
+      }
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && menu.classList.contains('active')) {
+        closeMenu();
+      }
+    });
+  })();
+</script>
 
 {% schema %}
 {
